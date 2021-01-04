@@ -9,7 +9,8 @@ telebot.logger.setLevel(logging.DEBUG) # Outputs debug messages to console.
 
 
 bot =  telebot.TeleBot(Config.BOT_TOKEN, parse_mode=None)
-api = bsuir.IISBsuirApi()
+api = bsuir.IISBsuirApi(Config.BSUIR_USERNAME, Config.BSUIR_PASSWORD)
+api.auth()
 
 @bot.message_handler(commands=['start'])
 def start(message):
@@ -17,20 +18,14 @@ def start(message):
 
 @bot.message_handler(commands=['list_gradebook'])
 def list_gradebook(message):
-    gradebook = None
-    try:
-        gradebook = api.getGradebook()
-    except bsuir.AuthRequired as e:
-        api.auth(Config.BSUIR_USERNAME, Config.BSUIR_PASSWORD)
-        gradebook = e.try_method()
-        
+    gradebook = api.getGradebook()
     schedules = gradebook['todaySchedules']
     formated = ""
     for i in schedules:
         lessonTime = i['lessonTime']
         subject = i['subject']
         lessonType = i ['lessonType']
-        formated += "{subject} {lessonTime} {lessonType}\n".format(
+        formated += "**{subject}** {lessonTime} *{lessonType}*\n".format(
             subject=subject,
             lessonTime=lessonTime,
             lessonType=lessonType
