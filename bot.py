@@ -25,12 +25,12 @@ def list_gradebook(message):
         lessonTime = i['lessonTime']
         subject = i['subject']
         lessonType = i ['lessonType']
-        formated += "**{subject}** {lessonTime} *{lessonType}*\n".format(
+        formated += '*{subject}*   {lessonTime}   {lessonType}\n'.format(
             subject=subject,
             lessonTime=lessonTime,
             lessonType=lessonType
         )
-    bot.reply_to(message, formated)
+    bot.reply_to(message, formated, parse_mode='markdown')
 
 @bot.message_handler(func=lambda message: True)
 def echo_all(message):
