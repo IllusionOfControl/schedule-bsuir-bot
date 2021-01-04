@@ -1,4 +1,5 @@
 from bot import bot, server
+import os
 
 if __name__ == "__main__":
     #bot.polling()
