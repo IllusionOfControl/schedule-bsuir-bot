@@ -1,4 +1,4 @@
-from bot import bot, server
+from server import server
 import os
 
 if __name__ == "__main__":

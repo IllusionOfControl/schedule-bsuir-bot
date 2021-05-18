@@ -44,29 +44,55 @@ def list_schedule(message):
         lesson_time = i['lessonTime']
         subject = i['subject']
         lesson_type = i['lessonType']
-        response += '*{subject}*   {lessonTime}   {lessonType}\n'.format(
+        auditory = i['auditory'][0]
+        response += '*{subject}*   {lessonTime}   {lessonType}   _{auditory}_\n'.format(
             subject=subject,
             lessonTime=lesson_time,
-            lessonType=lesson_type
+            lessonType=lesson_type,
+            auditory=auditory
         )
     else:
         response = 'There is no schedule for today! :D'
-    bot.reply_to(message, response, parse_mode='markdown')
+    bot.send_message(message.chat.id, response, parse_mode='markdown')
 
 
-@bot.message_handler(func=lambda message: True)
-def echo_all(message):
-    markup = telebot.types.ReplyKeyboardMarkup()
-    items = [
-        telebot.types.KeyboardButton('/list_gradebook')
-    ]
-    for i in items:
-        markup.row(i)
-    bot.send_message(message, reply_markup=markup)
+@bot.message_handler(commands=['list_at'])
+def list_schedule_at(message):
+    bot.send_message(message.chat.id, 'Input pls the target date')
+    bot.register_next_step_handler(message, process_date_step)
+
+
+def process_date_step(message):
+    schedule = api.get_schedule()
+    response = ''
+
+    if len(message.text) < 2:
+        bot.send_message(message.chat.id, 'Please enter the correct value (dd.mm)\nFor example 01 or 01.01')
+        return
+
+    date = message.text
+    for i in schedule['examSchedules']:
+        if i['weekDay'].startswith(date):
+            for j in i['schedule']:
+                lesson_time = j['lessonTime']
+                subject = j['subject']
+                lesson_type = j['lessonType']
+                auditory = j['auditory'][0]
+                response += '*{subject}*   {lessonTime}   {lessonType}   _{auditory}_\n'.format(
+                    subject=subject,
+                    lessonTime=lesson_time,
+                    lessonType=lesson_type,
+                    auditory=auditory
+                )
+            break
+    else:
+        response = 'the schedule for this day was not found :('
+    bot.send_message(message.chat.id, response, parse_mode='markdown')
 
 
 @bot.message_handler(func=lambda message: True, content_types=['text'])
-def command_default(m):
-    bot.send_message(m.chat.id, "I don't understand \"" + m.text + "\"\nMaybe try the help page at /help")
-
-# bot.set_webhook(url=Config.BOT_WEBHOOK_URL)
+def command_default(message):
+    response = 'I don\'t understand {text}. Maybe try the help page at /help'.format(
+        text=message.text
+    )
+    bot.send_message(message.chat.id, text=response)
