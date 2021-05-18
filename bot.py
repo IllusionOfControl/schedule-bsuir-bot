@@ -1,5 +1,4 @@
 from config import Config
-from flask import Flask, request
 import bsuir
 import telebot
 import logging
@@ -9,7 +8,6 @@ logger = telebot.logger
 telebot.logger.setLevel(logging.DEBUG)
 
 bot = telebot.TeleBot(Config.BOT_TOKEN, parse_mode=None)
-server = Flask(__name__)
 
 api = bsuir.IISBsuirApi(Config.BSUIR_USERNAME, Config.BSUIR_PASSWORD)
 api.auth()
@@ -71,18 +69,4 @@ def echo_all(message):
 def command_default(m):
     bot.send_message(m.chat.id, "I don't understand \"" + m.text + "\"\nMaybe try the help page at /help")
 
-
-@server.route('/' + Config.BOT_TOKEN, methods=['POST'])
-def get_message():
-    bot.process_new_updates([telebot.types.Update.de_json(request.stream.read().decode("utf-8"))])
-    return "!", 200
-
-
-@server.route("/")
-def webhook():
-    bot.remove_webhook()
-    bot.set_webhook(url=Config.BOT_WEBHOOK_URL + Config.BOT_TOKEN)
-    return "!", 200
-
-
-#bot.set_webhook(url=Config.BOT_WEBHOOK_URL)
+# bot.set_webhook(url=Config.BOT_WEBHOOK_URL)
