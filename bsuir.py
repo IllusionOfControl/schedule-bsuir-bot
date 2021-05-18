@@ -14,22 +14,21 @@ class AuthRequired(Exception):
     def __init__(self, method):
         self._method = method
 
-
     def try_method(self):
         return self._method()
 
 
-class IISBsuirApi():
+class IISBsuirApi:
     def __init__(self, username, password):
         self._session = requests.Session()
         self._username = username
         self._password = password
 
-    def auth(self, ):
+    def auth(self):
         payload = json.dumps({'username': self._username, 'password': self._password})
         headers = {'Content-Type': 'application/json'}
         r = self._session.post('https://journal.bsuir.by/api/v1/auth/login', data=payload, headers=headers)
-        if r.json()['loggedIn'] == False:
+        if r.json().get('loggedIn'):
             raise AuthError
         if r.status_code != 200:
             raise requests.exceptions.HTTPError
