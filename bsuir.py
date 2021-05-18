@@ -24,8 +24,7 @@ class IISBsuirApi():
         self._session = requests.Session()
         self._username = username
         self._password = password
-        
-        
+
     def auth(self, ):
         payload = json.dumps({'username': self._username, 'password': self._password})
         headers = {'Content-Type': 'application/json'}
@@ -34,13 +33,12 @@ class IISBsuirApi():
             raise AuthError
         if r.status_code != 200:
             raise requests.exceptions.HTTPError
-            
-        
-    def getGradebook(self):
+
+    def get_schedule(self):
         r = self._session.get('https://journal.bsuir.by/api/v1/portal/schedule/gradebook')
         if r.status_code == 500:
             raise AuthError
         if r.status_code == 401:
             self.auth()
-            return self.getGradebook()    
+            return self.get_schedule()
         return r.json()
