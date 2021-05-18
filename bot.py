@@ -15,9 +15,9 @@ api = bsuir.IISBsuirApi(Config.BSUIR_USERNAME, Config.BSUIR_PASSWORD)
 api.auth()
 
 commands = {
-    '/start': 'Get used to the bot',
-    '/list': 'Displaying the schedule for the current day',
-    '/list_at': 'Displaying the schedule for the target date'
+    'start': 'Get used to the bot',
+    'list': 'Displaying the schedule for the current day',
+    'list_at': 'Displaying the schedule for the target date'
 }
 
 
@@ -29,7 +29,7 @@ def start(message):
 @bot.message_handler(commands=['help'])
 def start(message):
     cid = message.chat.id
-    help_text = "The following commands are available: \n"
+    help_text = 'The following commands are available: \n'
     for key in commands:
         help_text += "/" + key + ": "
         help_text += commands[key] + "\n"
@@ -52,7 +52,7 @@ def list_schedule(message):
             lessonType=lesson_type
         )
     else:
-        response = 'There`s no schedule for today! :D'
+        response = 'There is no schedule for today! :D'
     bot.reply_to(message, response, parse_mode='markdown')
 
 
