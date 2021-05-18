@@ -67,6 +67,11 @@ def echo_all(message):
     bot.send_message(message, reply_markup=markup)
 
 
+@bot.message_handler(func=lambda message: True, content_types=['text'])
+def command_default(m):
+    bot.send_message(m.chat.id, "I don't understand \"" + m.text + "\"\nMaybe try the help page at /help")
+
+
 @server.route('/' + Config.BOT_TOKEN, methods=['POST'])
 def get_message():
     bot.process_new_updates([telebot.types.Update.de_json(request.stream.read().decode("utf-8"))])
